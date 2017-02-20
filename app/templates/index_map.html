@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}珍爱地图{% endblock%}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+ <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">珍爱妹子</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li ><a href="{{url_for('main.index')}}">首页</a></li>
+            <li class="active"><a href="{{ url_for('main.map') }}">珍爱地图</a></li>
+            <li><a href="{{ url_for('main.data_detail') }}">珍爱数据</a></li>
+          </ul>
+        </div>
+      </div>
+      </div>
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-xs-12 col-sm-9 col-md-offset-2">
+        <input type="hidden" name="" value="{{ map_val }}">
+        <input type="hidden" name="" value="{{ return_val }}" id="hidMapVal">
+        <div id="main" style="width:600px;height:600px;">
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='echarts.js') }}" charset="utf-8"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('[data-toggle="offcanvas"]').click(function(){
+        $('.row-offcanvas').toggleClass('active')
+    })
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.showLoading();
+ var dataArray =eval($('#hidMapVal').val())
+$.get('{{ url_for("static", filename="beijing.json")}}', function (geoJson) {
+
+    myChart.hideLoading();
+
+    echarts.registerMap('beijing', geoJson);
+
+    myChart.setOption(option = {
+        title: {
+            text: '珍爱北京妹子分布图',
+            subtext: '数据来自珍爱网',
+            sublink: 'http://search.zhenai.com/v2/search/pinterest.do'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b}<br/>共{c}人'
+        },
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                dataView: {readOnly: false},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        visualMap: {
+            min: 0,
+            max: 600,
+            text:['High','Low'],
+            realtime: false,
+            calculable: true,
+            inRange: {
+                color: ['lightskyblue','yellow', 'orangered']
+            }
+        },
+        series: [
+            {
+                name: '珍爱北京妹子分布图',
+                type: 'map',
+                mapType: 'beijing', // 自定义扩展图表类型
+                itemStyle:{
+                    emphasis:{label:{show:true}}
+                },
+                data:dataArray,
+                // 自定义名称映射
+
+            }
+        ]
+    });
+});
+})
+</script>
+{% endblock %}

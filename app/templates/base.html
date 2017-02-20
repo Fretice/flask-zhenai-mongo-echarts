@@ -1,0 +1,59 @@
+{% extends "bootstrap/base.html"  %}
+{% block title%}珍爱妹子{% endblock %}
+{% block head %}
+{{super()}}
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')  }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='img_list.css')  }}">
+<link rel="stylesheet" type="text/css" href="http://cdn.bootcss.com/pace/1.0.2/themes/black/pace-theme-barber-shop.min.css">
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+ <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">珍爱妹子</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="{{url_for('main.index')}}">首页</a></li>
+            <li><a href="{{ url_for('main.map') }}">珍爱地图</a></li>
+            <li><a href="{{ url_for('main.data_detail') }}">珍爱数据</a></li>
+          </ul>
+        </div>
+      </div>
+      </div>
+{% endblock %}
+{% block content %}
+<div class="container">
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-warning" >
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+{% block page_content %}
+{% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="http://cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='zooming.js')}}"></script>
+<script type="text/javascript">
+  $(function(){
+
+
+  })
+</script>
+{% endblock%}

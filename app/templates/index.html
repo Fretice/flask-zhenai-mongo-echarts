@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}珍爱妹子们{% endblock%}
+
+{% block page_content %}
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="col-xs-12 col-sm-9 col-md-offset-1">
+<p class="pull-right visible-xs">
+    <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">显示标签</button>
+</p>
+<div class="row">
+{% include "img_list.html" %}
+
+{% if pagination %}
+<div class="pagination" style="align-self: center;">
+    {{ macros.pagination_widget(pagination, '.index') }}
+</div>
+{% endif %}
+</div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='pinterest_grid.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('[data-toggle="offcanvas"]').click(function(){
+        $('.row-offcanvas').toggleClass('active')
+    })
+    $("#gallery-wrapper").pinterest_grid();
+})
+</script>
+{% endblock %}

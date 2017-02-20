@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}珍爱数据可视化{% endblock%}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+ <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">珍爱妹子</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li ><a href="{{url_for('main.index')}}">首页</a></li>
+            <li><a href="{{ url_for('main.map') }}">珍爱地图</a></li>
+            <li  class="active"><a href="{{ url_for('main.data_detail') }}">珍爱数据</a></li>
+          </ul>
+        </div>
+      </div>
+      </div>
+{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-9 col-md-offset-3">
+            <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+            <button type="button" class="btn btn-primary btn-data" value="age" onclick="ShowDataDetail('age')">查看年龄细分布</button>
+
+            <!-- Indicates a successful or positive action -->
+            <button type="button" class="btn btn-success btn-data" value="height" onclick="ShowDataDetail('height')">查看身高细分布</button>
+
+            <!-- Contextual button for informational alert messages -->
+            <button type="button" class="btn btn-info btn-data" value="edu" onclick="ShowDataDetail('edu')" >查看学历细分布</button>
+
+            <button type="button" class="btn btn-danger btn-data" valuue="marry_statu" onclick="ShowDataDetail('marry_status')" >查看婚姻细分布</button>
+
+            <div id="main" style="width:600px;height:500px;">
+
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+{% block scripts %}
+{{  super() }}
+<script src="{{ url_for('static', filename='echarts.js') }}" charset="utf-8"></script>
+<script type="text/javascript">
+$(function(){
+    ShowDataDetail('age')
+})
+function ShowDataDetail(type){
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.showLoading();
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    var return_val = "";
+    $.ajax({
+        type:'post',
+        url: $SCRIPT_ROOT+'/get_data/'+type,
+        async: false,
+        success:function(data){
+            return_val = data
+            myChart.hideLoading();
+        },
+        error:function(){}
+
+    })
+    col_list = return_val.split('^')[0]
+    val_list = return_val.split('^')[1]
+if (type =="age" || type =="height") {
+
+    option ={
+        title: {
+            text: '珍爱妹子详细数据分布',
+            left: 'center',
+            top: 20,
+            textStyle: {
+                color: '#ccc'
+            }
+        },
+        tooltip : {
+            trigger: 'axis',
+            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis : [
+            {
+                type : 'category',
+                data : eval(col_list),
+                axisTick: {
+                    alignWithLabel: true
+                }
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value'
+            }
+        ],
+        series : [
+            {
+                type:'bar',
+                barWidth: '60%',
+                data:eval(val_list)
+            }
+        ]
+    };
+}
+else {
+    var val_title=""
+    if (type=="edu") {
+        val_title = "教育程度"
+    }
+    else {
+            val_title = "婚姻状况"
+    }
+    option = {
+        title : {
+                text: '珍爱妹子详细数据分布',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: eval(col_list)
+            },
+            series : [
+                {
+                    name: val_title,
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data:eval(val_list),
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+
+};
+}
+// 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+}
+</script>
+{% endblock %}

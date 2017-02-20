@@ -1,0 +1,25 @@
+<section id="gallery-wrapper">
+    {% for img in imgs %}
+    <article class="white-panel">
+        <a href="http://album.zhenai.com/u/{{ img.MemberId }}?flag=s" target="_blank">
+        <img src="{{ img.pic_logo.split('_')[0]+'_2.jpg' }}" class="thumb" data-action='zoom' alt="{{ img.salary }}">
+        <h1>{{ img.NickName }}</h1>
+        </a>
+        {% if img.height.replace("CM", "")|int > 165 %}
+        <span class="label label-info">高挑</span>
+        {% endif %}
+        {% if img.age.replace("岁", "")|int < 25%}
+        <span class="label label-warning">情窦初开</span>
+        {% elif img.age.replace("岁", "")|int < 30 %}
+        <span class="label label-warning">温暖柔情</span>
+        {% else %}
+        <span class="label label-warning">成熟大方</span>
+        {% endif %}
+        {% if img.edu == "硕士" or img.edu =="博士" %}
+        <span class="label label-success">高智商</span>
+        {% endif %}
+        <span class="label label-primary">{{ img.salary }}</span>
+
+    </article>
+    {% endfor %}
+</section>
